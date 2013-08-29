@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html ng-app="directives_test">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>angularjs compile/directive example</title>
+    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <script src="js/angular.js"></script>
+    <script src="js/angular-route.js"></script>
+    <script src="js/restangular.js"></script>
+    <script src="js/underscore.js"></script>
+
+    <script type="text/ng-template" id="directive_one.html">
+        <div>howdy from directive_one {{ foo.name }} - <strong>{{ test }}</strong></div>
+    </script>
+
+    <script type="text/ng-template" id="directive_two.html">
+        <div>howdy from directive_two <strong>{{ test }}</strong> - {{ foo.name }}</div>
+    </script>
+
+    <script type="text/ng-template" id="viewTemplate.html">
+        <p>...main view template stuff goes here</p>
+        <div compile="templateStr"></div>
+    </script>
+
+    <script>
+        var app = angular.module('directives_test', ['ngRoute'], function ($compileProvider) {
+            $compileProvider.directive('compile', function ($compile) {
+                // directive factory creates a link function
+                return function (scope, element, attrs) {
+                    scope.$watch(
+                            function (scope) {
+                                // watch the 'compile' expression for changes
+                                return scope.$eval(attrs.compile);
+                            },
+                            function (value) {
+                                // when the 'compile' expression changes
+                                // assign it into the current DOM
+                                element.html(value);
+
+                                // compile the new DOM and link it to the current
+                                // scope.
+                                // NOTE: we only compile .childNodes so that
+                                // we don't get into infinite loop compiling ourselves
+                                $compile(element.contents())(scope);
+                            }
+                    );
+                };
+            });
+        });
+
+        app.schemaInputDirective = function(templateIdStr){
+            var result = {
+                    restrict: 'E',
+                    transclude: false,
+                    scope: { test : '=', foo : '=' },
+            }; 
+            if( /.*\.html$/.test(templateIdStr) ) {
+                result.templateUrl = templateIdStr;
+            } else {
+                result.template = templateIdStr;
+            }
+            return result;
+        }
+
+        app.controller("Ctrl", function ($scope) {
+            $scope.obj = { foo: { name: 'foo.name value' } };
+            $scope.parentTest = 'parentTest string value';
+            $scope.templateStr = '<p>\n' +
+                    '        <directiveone test="parentTest" foo="obj.foo"></directiveone>\n' +
+                    '        <directivetwo test="parentTest" foo="obj.foo"></directivetwo>\n' +
+                    '\n</p><p>' +
+                    '        $scope.obj.foo.name: <input type="text" ng-model="obj.foo.name"/><br />\n' +
+                    '        $scope.parentTest: <input type="text" ng-model="parentTest"/><br />\n' +
+                    '</p>';
+
+        });
+
+        app.config(function ($routeProvider, $locationProvider) {
+            $routeProvider.when('/', {
+                templateUrl: 'viewTemplate.html',
+                controller: 'Ctrl'
+            });
+            $routeProvider.otherwise({
+                redirectTo: '/'
+            });
+        });
+
+        app.directive('directiveone', function () {
+            console.log('app.directive directiveone');
+            return app.schemaInputDirective('directive_one.html');
+        });
+
+        app.directive('directivetwo', function () {
+            console.log('app.directive directivetwo');
+            return app.schemaInputDirective('directive_two.html');
+        });
+    </script>
+</head>
+
+<body>
+<ng-view>Loading...</ng-view>
+</body>
+</html>
