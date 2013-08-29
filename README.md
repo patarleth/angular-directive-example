@@ -1,6 +1,15 @@
 angular-directive-example
 ===
 
+Angular [directives](http://docs.angularjs.org/guide/directive) let you create html tags or attributes on existing tags. 
+
+This project demonstrates to how to create 2 very simple markup 'tags' - directiveone and directivetwo.  
+Objects are passed from the parent controller scope to the directives, maintaining two way databinding.  
+
+And just to make the example more fun(!) I've complicated the code by using $compile to make dynamic views from a controller scope variable, soooooo much fun!
+
+===
+
 1. npm install
 2. npm start
 3. http://127.0.0.1:4001/
