@@ -12,17 +12,17 @@
     <script src="js/restangular.js"></script>
     <script src="js/underscore.js"></script>
 
+    <script type="text/ng-template" id="viewTemplate.html">
+        <p>...main view template stuff goes here</p>
+        <div compile="templateStr"></div>
+    </script>
+
     <script type="text/ng-template" id="directive_one.html">
         <div>howdy from directive_one {{ foo.name }} - <strong>{{ test }}</strong></div>
     </script>
 
     <script type="text/ng-template" id="directive_two.html">
         <div>howdy from directive_two <strong>{{ test }}</strong> - {{ foo.name }}</div>
-    </script>
-
-    <script type="text/ng-template" id="viewTemplate.html">
-        <p>...main view template stuff goes here</p>
-        <div compile="templateStr"></div>
     </script>
 
     <script>
@@ -51,7 +51,7 @@
             });
         });
 
-        app.schemaInputDirective = function(templateIdStr){
+        app.sampleInputDirective = function(templateIdStr){
             var result = {
                     restrict: 'E',
                     transclude: false,
@@ -90,12 +90,12 @@
 
         app.directive('directiveone', function () {
             console.log('app.directive directiveone');
-            return app.schemaInputDirective('directive_one.html');
+            return app.sampleInputDirective('directive_one.html');
         });
 
         app.directive('directivetwo', function () {
             console.log('app.directive directivetwo');
-            return app.schemaInputDirective('directive_two.html');
+            return app.sampleInputDirective('directive_two.html');
         });
     </script>
 </head>
